@@ -18,7 +18,7 @@ class HomeScreen extends React.Component {
   }
 
   render() {
-    const { value } = this.state
+    const { value } = this.state;
     return (
       <View style={{ flex: 1, alignItems: 'center' }}>
         <Image
