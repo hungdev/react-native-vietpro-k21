@@ -6,6 +6,7 @@ import { createStackNavigator } from 'react-navigation-stack';
 import HomeScreen from '../screens/Home'
 import ProfileScreen from '../screens/Profile'
 import SignInScreen from '../screens/Login'
+import SignUpScreen from '../screens/Register'
 // Implementation of HomeScreen, OtherScreen, SignInScreen, AuthLoadingScreen
 // goes here.
 
@@ -15,7 +16,13 @@ const AppStack = createStackNavigator({
 }, {
   initialRouteName: 'Profile',
 });
-const AuthStack = createStackNavigator({ SignIn: SignInScreen });
+const AuthStack = createStackNavigator({
+  SignIn: SignInScreen,
+  SignUp: SignUpScreen,
+}, {
+  initialRouteName: 'SignUp',
+}
+);
 
 export default createAppContainer(
   createSwitchNavigator(
@@ -25,7 +32,7 @@ export default createAppContainer(
       Auth: AuthStack,
     },
     {
-      initialRouteName: 'App',
+      initialRouteName: 'Auth',
     }
   )
 );

@@ -26,7 +26,7 @@ class HomeScreen extends React.Component {
           style={{ height: 100, width: 100, marginTop: '20%' }} />
         <TextInput
           style={{
-            height: 40,
+            height: 60,
             borderColor: '#ccc',
             borderWidth: 1,
             width: '80%',
@@ -40,7 +40,7 @@ class HomeScreen extends React.Component {
         />
         <TextInput
           style={{
-            height: 40,
+            height: 60,
             borderColor: '#ccc',
             borderWidth: 1,
             width: '80%',
@@ -54,21 +54,21 @@ class HomeScreen extends React.Component {
         />
         <TouchableOpacity
           style={{
-            height: 60, width: '80%', marginTop: 50
+            height: 60, width: '80%', marginTop: 30, justifyContent: 'center', alignItems: 'center'
           }}>
           <Image
             source={require('../../assets/button_block.png')}
             style={{ height: 60, width: '100%', }} />
-          <Text
-            style={{
-              position: 'absolute',
-              left: '45%', top: '20%',
-              fontSize: 20,
-              fontWeight: 'bold',
-              color: 'white'
-            }}>
-            Login
-            </Text>
+          <View style={{ position: 'absolute' }}>
+            <Text
+              style={{
+                fontSize: 20,
+                fontWeight: 'bold',
+                color: 'white',
+              }}>
+              Login
+              </Text>
+          </View>
         </TouchableOpacity>
         <View style={{ flexDirection: 'row', marginTop: 10 }}>
           <Text style={{ marginRight: 10, color: 'grey' }}>No Account?</Text>
