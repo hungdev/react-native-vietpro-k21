@@ -18,7 +18,7 @@ const AppStack = createStackNavigator({
   Profile: ProfileScreen,
   Post: PostScreen,
 }, {
-  initialRouteName: 'Post',
+  initialRouteName: 'Home',
   defaultNavigationOptions: {
     //https://reactnavigation.org/docs/en/stack-navigator.html
     headerBackground: (
