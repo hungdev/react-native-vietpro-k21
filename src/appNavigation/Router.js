@@ -9,6 +9,7 @@ import ProfileScreen from '../screens/Profile'
 import SignInScreen from '../screens/Login'
 import SignUpScreen from '../screens/Register'
 import PostScreen from '../screens/Post'
+import FriendsScreen from '../screens/Friends'
 // Implementation of HomeScreen, OtherScreen, SignInScreen, AuthLoadingScreen
 // goes here.
 import { Metrics } from '../themes';
@@ -17,8 +18,9 @@ const AppStack = createStackNavigator({
   Home: HomeScreen,
   Profile: ProfileScreen,
   Post: PostScreen,
+  Friends: FriendsScreen,
 }, {
-  initialRouteName: 'Home',
+  initialRouteName: 'Friends',
   defaultNavigationOptions: {
     //https://reactnavigation.org/docs/en/stack-navigator.html
     headerBackground: (
