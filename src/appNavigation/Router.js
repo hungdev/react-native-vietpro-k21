@@ -20,7 +20,7 @@ const AppStack = createStackNavigator({
   Post: PostScreen,
   Friends: FriendsScreen,
 }, {
-  initialRouteName: 'Friends',
+  initialRouteName: 'Post',
   defaultNavigationOptions: {
     //https://reactnavigation.org/docs/en/stack-navigator.html
     headerBackground: (
