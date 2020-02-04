@@ -1,7 +1,7 @@
 import { create } from 'apisauce';
 
 const api = create({
-  baseURL: 'https://slack.com/api',
+  baseURL: 'http://hungvu.net',
   headers: {
     Accept: 'application/json',
     'Content-Type': 'application/json',
@@ -11,5 +11,7 @@ const api = create({
   timeout: 60000,
 });
 
-export function postMessage(params) { return api.get(`/chat.postMessage`, params); }
-export function getChanel(params) { return api.get(`/channels.list`, params); }
+export function signUp(params) {
+  return api.post(`/signup`, params);
+}
+// export function getChanel(params) { return api.get(`/channels.list`, params); }

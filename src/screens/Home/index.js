@@ -8,15 +8,21 @@ import { Hr } from '../../components'
 import { Metrics, Colors } from '../../themes';
 
 class HomeScreen extends React.Component {
-  static navigationOptions = {
-    // header: null,
-    headerRight: () => {
-      return (
-        <View style={styles.warpHeader}>
-          <Feather name='search' size={30} style={styles.userIcon} />
-          <EvilIcons name='user' size={38} style={styles.userIcon} />
-        </View>
-      )
+  static navigationOptions = ({ navigation }) => {
+    return {
+      // header: null,
+      headerRight: () => {
+        return (
+          <View style={styles.warpHeader}>
+            <Feather name='search' size={30} style={styles.userIcon} />
+            <TouchableOpacity onPress={navigation.getParam('moveProfile')} >
+              <EvilIcons
+                name='user' size={38} style={styles.userIcon}
+              />
+            </TouchableOpacity>
+          </View>
+        )
+      }
     }
   };
 
@@ -34,16 +40,29 @@ class HomeScreen extends React.Component {
     }
   }
 
+  componentDidMount() {
+    this.props.navigation.setParams({ moveProfile: this.onMoveToProfile });
+    // this.props.navigation.setParams({ moveProfile: () => this.props.navigation.navigate('Profile') });
+  }
+
+  onMoveToProfile = () => {
+    this.props.navigation.navigate('Profile')
+  }
+
   renderItem(item) {
     return (
       <View style={{ marginTop: 10, borderWidth: 1, backgroundColor: 'white' }}>
         <View style={{ padding: 20 }}>
-          <View style={{ flexDirection: 'row', }}>
+          <View style={{ flexDirection: 'row' }}>
             <Image
               source={{ uri: 'http://i.imgur.com/vGXYiYy.jpg' }}
               style={{ height: 40, width: 40, borderRadius: 20, marginRight: 10 }} />
             <View>
-              <Text style={{ fontSize: 16, fontWeight: 'bold' }}>{item.name}</Text>
+              <Text
+                style={{ fontSize: 16, fontWeight: 'bold' }}
+                onPress={() => this.props.navigation.navigate('Profile')}
+              >
+                {item.name}</Text>
               <Text style={{ fontSize: 14, color: Colors.grey }}>{item.email}</Text>
             </View>
           </View>
@@ -65,7 +84,7 @@ class HomeScreen extends React.Component {
           </View>
           <Text>{item.date}</Text>
         </View>
-      </View>
+      </View >
     )
   }
 

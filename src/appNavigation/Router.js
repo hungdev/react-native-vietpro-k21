@@ -20,7 +20,7 @@ const AppStack = createStackNavigator({
   Post: PostScreen,
   Friends: FriendsScreen,
 }, {
-  initialRouteName: 'Post',
+  initialRouteName: 'Home',
   defaultNavigationOptions: {
     //https://reactnavigation.org/docs/en/stack-navigator.html
     headerBackground: (
@@ -56,7 +56,7 @@ export default createAppContainer(
       Auth: AuthStack,
     },
     {
-      initialRouteName: 'App',
+      initialRouteName: 'Auth',
     }
   )
 );

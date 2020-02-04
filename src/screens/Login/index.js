@@ -72,7 +72,9 @@ class HomeScreen extends React.Component {
         </TouchableOpacity>
         <View style={{ flexDirection: 'row', marginTop: 10 }}>
           <Text style={{ marginRight: 10, color: 'grey' }}>No Account?</Text>
-          <Text style={{ color: 'red' }}>Sign Up</Text>
+          <Text style={{ color: 'red' }}
+            onPress={() => this.props.navigation.navigate('SignUp')}
+          >Sign Up</Text>
         </View>
       </View>
     );

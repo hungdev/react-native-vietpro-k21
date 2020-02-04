@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Button, View, Text, Image, TextInput, TouchableOpacity, ScrollView } from 'react-native';
-
+import { signUp } from '../../services/Api'
 class Register extends React.Component {
   static navigationOptions = {
     header: null,
@@ -8,21 +8,48 @@ class Register extends React.Component {
 
   constructor(props) {
     super(props)
-
     this.state = {
-      value: ''
+      data: {
+        email: '',
+        userName: '',
+        password: '',
+        confirmPassword: ''
+      }
     }
   }
-  onChangeText(value) {
-    this.setState({ value })
+  onChangeText(value, type) {
+    const { data } = this.state
+    // const data = this.state.data
+    this.setState({
+      data: {
+        ...data, [type]: value
+      }
+    })
   }
 
-  onLogin() {
-    alert('login')
+  async onSignUp() {
+    const { data, data: { password, email, confirmPassword, userName } } = this.state
+    // const password = this.state.data.password
+    if (!password || !email || !confirmPassword || !userName) {
+      alert('some fields are empty')
+      return
+    }
+    if (password !== confirmPassword) {
+      alert('confirmPassword is not correct')
+      return
+    }
+    try {
+      const result = await signUp(data)
+      if (result.ok) {
+        this.props.navigation.navigate('Home')
+      }
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   render() {
-    const { value } = this.state;
+    const { data } = this.state;
     return (
       <ScrollView>
         <View style={{ flex: 1, alignItems: 'center' }}>
@@ -39,8 +66,8 @@ class Register extends React.Component {
               marginTop: 30,
               paddingLeft: 10
             }}
-            onChangeText={text => this.onChangeText(text)}
-            value={value}
+            onChangeText={text => this.onChangeText(text, 'email')}
+            value={data.email}
             placeholder='Your email'
           />
           <TextInput
@@ -53,41 +80,12 @@ class Register extends React.Component {
               marginTop: 10,
               paddingLeft: 10
             }}
-            onChangeText={text => this.onChangeText(text)}
-            value={value}
-            placeholder='Your password'
-          />
-          <TextInput
-            style={{
-              height: 60,
-              borderColor: '#ccc',
-              borderWidth: 1,
-              width: '80%',
-              borderRadius: 5,
-              marginTop: 10,
-              paddingLeft: 10
-            }}
-            onChangeText={text => this.onChangeText(text)}
-            value={value}
-            placeholder='Confirm password'
-          />
-          <TextInput
-            style={{
-              height: 60,
-              borderColor: '#ccc',
-              borderWidth: 1,
-              width: '80%',
-              borderRadius: 5,
-              marginTop: 10,
-              paddingLeft: 10
-            }}
-            onChangeText={text => this.onChangeText(text)}
-            value={value}
-            placeholder='First name'
+            onChangeText={text => this.onChangeText(text, 'userName')}
+            value={data.userName}
+            placeholder='User name'
             onSubmitEditing={() => { this.lastNameRef.focus() }}
           />
           <TextInput
-            ref={ref => { this.lastNameRef = ref }}
             style={{
               height: 60,
               borderColor: '#ccc',
@@ -97,13 +95,29 @@ class Register extends React.Component {
               marginTop: 10,
               paddingLeft: 10
             }}
-            onChangeText={text => this.onChangeText(text)}
-            value={value}
-            placeholder='Last name'
-            onSubmitEditing={() => { this.onLogin() }}
+            onChangeText={text => this.onChangeText(text, 'password')}
+            value={data.password}
+            placeholder='Your password'
+            secureTextEntry
           />
+          <TextInput
+            style={{
+              height: 60,
+              borderColor: '#ccc',
+              borderWidth: 1,
+              width: '80%',
+              borderRadius: 5,
+              marginTop: 10,
+              paddingLeft: 10
+            }}
+            onChangeText={text => this.onChangeText(text, 'confirmPassword')}
+            value={data.confirmPassword}
+            placeholder='Confirm password'
+            secureTextEntry
+          />
+
           <TouchableOpacity
-            onPress={() => this.onLogin()}
+            onPress={() => this.onSignUp()}
             ref={ref => { this.btnSignUpRef = ref }}
             style={{
               height: 60, width: '80%', marginTop: 30, justifyContent: 'center', alignItems: 'center'
@@ -124,7 +138,9 @@ class Register extends React.Component {
           </TouchableOpacity>
           <View style={{ flexDirection: 'row', marginTop: 10 }}>
             <Text style={{ marginRight: 10, color: 'grey' }}>No Account?</Text>
-            <Text style={{ color: 'red' }}>Login Now</Text>
+            <Text style={{ color: 'red' }}
+              onPress={() => this.props.navigation.pop()}
+            >Login Now</Text>
           </View>
         </View>
       </ScrollView>
