@@ -1,4 +1,4 @@
-### Getting start
+### Getting started
 
 ```
 git clone https://github.com/hungdev/react-native-vietpro-k21.git
