@@ -28,7 +28,7 @@ const persistConfig = {
 // let reducer = persistCombineReducers(config, allReducers)
 const persistedReducer = persistReducer(persistConfig, allReducers)
 
-let store = createStore(persistedReducer);
+export const store = createStore(persistedReducer);
 let persistor = persistStore(store)
 
 export default class App extends Component {

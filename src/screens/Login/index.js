@@ -1,5 +1,8 @@
 import * as React from 'react';
 import { Button, View, Text, Image, TextInput, TouchableOpacity } from 'react-native';
+import { signIn } from '../../services/Api'
+import { connect } from 'react-redux';
+import { setToken } from '../../actions/authAction'
 
 class HomeScreen extends React.Component {
   static navigationOptions = {
@@ -10,15 +13,45 @@ class HomeScreen extends React.Component {
     super(props)
 
     this.state = {
-      value: ''
+      data: {
+        email: 'cee@c.com',
+        password: '123456'
+      }
     }
   }
-  onChangeText(value) {
-    this.setState({ value })
+  onChangeText(value, type) {
+    const { data } = this.state
+    this.setState({ data: { ...data, [type]: value } })
+    // this.setState({
+    //   data: {
+    //     email: '',
+    //     password: '',
+    //     [type]: value
+    //     // "email": value
+    //   }
+    // })
+  }
+
+  async onLogin() {
+    const { data } = this.state
+    try {
+      const result = await signIn(data)
+      if (result.ok) {
+        const token = result.data.token
+        this.props.dispatchSetToken(token)
+        this.getMe()
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  async getMe() {
+
   }
 
   render() {
-    const { value } = this.state;
+    const { data } = this.state;
     return (
       <View style={{ flex: 1, alignItems: 'center' }}>
         <Image
@@ -34,8 +67,8 @@ class HomeScreen extends React.Component {
             marginTop: 50,
             paddingLeft: 10
           }}
-          onChangeText={text => this.onChangeText(text)}
-          value={value}
+          onChangeText={text => this.onChangeText(text, 'email')}
+          value={data.email}
           placeholder='Your email'
         />
         <TextInput
@@ -48,14 +81,16 @@ class HomeScreen extends React.Component {
             marginTop: 30,
             paddingLeft: 10
           }}
-          onChangeText={text => this.onChangeText(text)}
-          value={value}
+          onChangeText={text => this.onChangeText(text, 'password')}
+          value={data.password}
           placeholder='Your Password'
         />
         <TouchableOpacity
           style={{
             height: 60, width: '80%', marginTop: 30, justifyContent: 'center', alignItems: 'center'
-          }}>
+          }}
+          onPress={() => this.onLogin()}
+        >
           <Image
             source={require('../../assets/button_block.png')}
             style={{ height: 60, width: '100%', }} />
@@ -80,4 +115,24 @@ class HomeScreen extends React.Component {
     );
   }
 }
-export default HomeScreen
+
+// lấy state từ store redux
+function mapStateToProps(state) {
+  return {
+    // state: state từ store, 
+    // authReducer: reducer được import trong index combineReducers
+    // auth: lấy từ state trong authReducer
+    token: state.auth.token
+  }
+}
+
+// gửi action lên reducer
+function mapDispatchToProps(dispatch) {
+  return {
+    // setToken là action
+    dispatchSetToken: (token) => dispatch(setToken(token)),
+    // dispatchDeletePerson: (person) => dispatch(removePerson(person))
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(HomeScreen)
