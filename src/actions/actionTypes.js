@@ -5,3 +5,6 @@ export const SET_PASSWORD = 'SET_PASSWORD'
 
 export const SET_TOKEN = 'SET_TOKEN'
 
+export const SET_ME = 'SET_ME'
+
+export const LOGOUT = 'LOGOUT'

@@ -1,13 +1,20 @@
 import React from 'react';
 import { Button, View, Text, Image, TouchableOpacity, ScrollView } from 'react-native';
+import { connect } from 'react-redux';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import FontAwesome from 'react-native-vector-icons/FontAwesome'
 import AntDesign from 'react-native-vector-icons/AntDesign'
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
 import { CardView, Hr } from '../../components';
 import { Metrics, Colors } from '../../themes'
+import { logout } from '../../actions/authAction'
 
 class ProfileScreen extends React.Component {
+
+  onLogout() {
+    this.props.dispatchLogout()
+    this.props.navigation.navigate('SignIn')
+  }
   render() {
     return (
       <ScrollView>
@@ -77,14 +84,30 @@ class ProfileScreen extends React.Component {
               lineColor={Colors.divider}
               marginTop={Metrics.baseMargin}
               marginBottom={Metrics.baseMargin} />
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 8 }}>
+            <TouchableOpacity
+              onPress={() => this.onLogout()}
+              style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 8 }}>
               <FontAwesome5 name="sign-out-alt" style={{ marginRight: 15 }} size={16} color="#bbb" />
               <Text>Logout</Text>
-            </View>
+            </TouchableOpacity>
           </CardView>
         </View >
       </ScrollView>
     );
   }
 }
-export default ProfileScreen
+function mapStateToProps(state) {
+  return {
+    token: state.auth.token,
+    user: state.auth.me
+  }
+}
+
+// gửi action lên reducer
+function mapDispatchToProps(dispatch) {
+  return {
+    dispatchLogout: (person) => dispatch(logout(person))
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(ProfileScreen)

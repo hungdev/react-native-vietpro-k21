@@ -36,4 +36,7 @@ export function signUp(params) {
 export function signIn(params) {
   return api.post(`/login`, params);
 }
+export function getMe(params) {
+  return api.get(`/get-me`, params);
+}
 // export function getChanel(params) { return api.get(`/channels.list`, params); }

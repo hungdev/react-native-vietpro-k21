@@ -2,7 +2,8 @@ import * as actionTypes from '../actions/actionTypes'
 
 const initialAuthState = {
   password: 'hello@cee',
-  token: ''
+  token: '',
+  me: null
 }
 
 export default (state = initialAuthState, action) => {
@@ -12,6 +13,12 @@ export default (state = initialAuthState, action) => {
 
     case actionTypes.SET_TOKEN:
       return { ...state, token: action.token }
+
+    case actionTypes.SET_ME:
+      return { ...state, me: action.user }
+
+    case actionTypes.LOGOUT:
+      return { ...state, token: '', me: '' }
 
     default:
       return state

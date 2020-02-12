@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { Button, View, Text, Image, TextInput, TouchableOpacity } from 'react-native';
-import { signIn } from '../../services/Api'
+import { signIn, getMe } from '../../services/Api'
 import { connect } from 'react-redux';
-import { setToken } from '../../actions/authAction'
+import { setToken, setMe } from '../../actions/authAction'
 
 class HomeScreen extends React.Component {
   static navigationOptions = {
@@ -19,6 +19,13 @@ class HomeScreen extends React.Component {
       }
     }
   }
+
+  componentDidMount() {
+    if (this.props.token) {
+      this.props.navigation.navigate('Home')
+    }
+  }
+
   onChangeText(value, type) {
     const { data } = this.state
     this.setState({ data: { ...data, [type]: value } })
@@ -47,7 +54,16 @@ class HomeScreen extends React.Component {
   }
 
   async getMe() {
-
+    try {
+      const result = await getMe()
+      if (result.ok) {
+        const user = result.data.data
+        this.props.dispatchSetMe(user)
+        this.props.navigation.navigate('Home')
+      }
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   render() {
@@ -122,7 +138,8 @@ function mapStateToProps(state) {
     // state: state từ store, 
     // authReducer: reducer được import trong index combineReducers
     // auth: lấy từ state trong authReducer
-    token: state.auth.token
+    token: state.auth.token,
+    user: state.auth.me
   }
 }
 
@@ -131,6 +148,7 @@ function mapDispatchToProps(dispatch) {
   return {
     // setToken là action
     dispatchSetToken: (token) => dispatch(setToken(token)),
+    dispatchSetMe: (user) => dispatch(setMe(user)),
     // dispatchDeletePerson: (person) => dispatch(removePerson(person))
   }
 }
