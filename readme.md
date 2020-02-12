@@ -5,7 +5,7 @@ git clone https://github.com/hungdev/react-native-vietpro-k21.git
 ```
 
 ```
-git checkout b4
+git checkout b6
 ```
 
 ```
