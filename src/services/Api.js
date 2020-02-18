@@ -39,4 +39,7 @@ export function signIn(params) {
 export function getMe(params) {
   return api.get(`/get-me`, params);
 }
+export function getNewFeed(params) {
+  return api.get(`/get-all-post`, params);
+}
 // export function getChanel(params) { return api.get(`/channels.list`, params); }

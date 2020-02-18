@@ -6,6 +6,12 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import styles from './styles'
 import { Hr } from '../../components'
 import { Metrics, Colors } from '../../themes';
+import { getNewFeed } from '../../services/Api'
+import momentTz from 'moment-timezone'
+import momentDurationFormatSetup from 'moment-duration-format'
+import moment from 'moment'
+
+momentDurationFormatSetup(momentTz)
 
 class HomeScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
@@ -26,23 +32,39 @@ class HomeScreen extends React.Component {
     }
   };
 
+  async getNewFeed() {
+    try {
+      const result = await getNewFeed()
+      console.log('ccccc', result)
+      if (result.ok) {
+        this.setState({ data: result.data.data })
+      }
+
+    } catch (error) {
+
+    }
+  }
+
   constructor(props) {
     super(props)
     this.state = {
       value: '',
-      data: [
-        { id: 1, name: 'user admin', email: 'admin@admin.com', content: 'hello', image: 'http://i.imgur.com/vGXYiYy.jpg', like: '1 like', date: '29 days ago' },
-        { id: 2, name: 'user hello', email: 'admin@admin.com', content: 'hello', image: 'http://i.imgur.com/vGXYiYy.jpg', like: '1 like', date: '28 days ago' },
-        { id: 3, name: 'user ccc', email: 'admin@admin.com', content: 'hello', image: 'http://i.imgur.com/vGXYiYy.jpg', like: '1 like', date: '25 days ago' },
-        { id: 4, name: 'user aaa', email: 'admin@admin.com', content: 'hello', image: 'http://i.imgur.com/vGXYiYy.jpg', like: '1 like', date: '24 days ago' },
-        { id: 5, name: 'user ccss', email: 'admin@admin.com', content: 'hello', image: 'http://i.imgur.com/vGXYiYy.jpg', like: '1 like', date: '29 days ago' },
-      ]
+      // data: [
+      //   { id: 1, name: 'user admin', email: 'admin@admin.com', content: 'hello', image: 'http://i.imgur.com/vGXYiYy.jpg', like: '1 like', date: '29 days ago' },
+      //   { id: 2, name: 'user hello', email: 'admin@admin.com', content: 'hello', image: 'http://i.imgur.com/vGXYiYy.jpg', like: '1 like', date: '28 days ago' },
+      //   { id: 3, name: 'user ccc', email: 'admin@admin.com', content: 'hello', image: 'http://i.imgur.com/vGXYiYy.jpg', like: '1 like', date: '25 days ago' },
+      //   { id: 4, name: 'user aaa', email: 'admin@admin.com', content: 'hello', image: 'http://i.imgur.com/vGXYiYy.jpg', like: '1 like', date: '24 days ago' },
+      //   { id: 5, name: 'user ccss', email: 'admin@admin.com', content: 'hello', image: 'http://i.imgur.com/vGXYiYy.jpg', like: '1 like', date: '29 days ago' },
+      // ]
+      data: []
     }
   }
 
   componentDidMount() {
     this.props.navigation.setParams({ moveProfile: this.onMoveToProfile });
     // this.props.navigation.setParams({ moveProfile: () => this.props.navigation.navigate('Profile') });
+
+    this.getNewFeed()
   }
 
   onMoveToProfile = () => {
@@ -50,6 +72,7 @@ class HomeScreen extends React.Component {
   }
 
   renderItem(item) {
+    const diff = moment().diff(moment(item.created_date), 'days');
     return (
       <View style={{ marginTop: 10, borderWidth: 1, backgroundColor: 'white' }}>
         <View style={{ padding: 20 }}>
@@ -62,8 +85,9 @@ class HomeScreen extends React.Component {
                 style={{ fontSize: 16, fontWeight: 'bold' }}
                 onPress={() => this.props.navigation.navigate('Profile')}
               >
-                {item.name}</Text>
-              <Text style={{ fontSize: 14, color: Colors.grey }}>{item.email}</Text>
+                admin
+              </Text>
+              <Text style={{ fontSize: 14, color: Colors.grey }}>{item.location}</Text>
             </View>
           </View>
           <View style={{ marginTop: Metrics.doubleBaseMargin }}>
@@ -71,7 +95,7 @@ class HomeScreen extends React.Component {
           </View>
         </View>
         <Image
-          source={{ uri: item.image }}
+          source={{ uri: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/220px-Image_created_with_a_mobile_phone.png' }}
           style={{ height: 200, width: 'auto', }} />
         <View style={{
           justifyContent: 'space-between',
@@ -80,9 +104,9 @@ class HomeScreen extends React.Component {
         }}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <AntDesign name='like1' size={25} style={{ color: Colors.facebook, marginRight: 10 }} />
-            <Text>{item.like}</Text>
+            <Text>{item.likes.length}</Text>
           </View>
-          <Text>{item.date}</Text>
+          <Text>{diff}</Text>
         </View>
       </View >
     )
@@ -121,7 +145,7 @@ class HomeScreen extends React.Component {
           <FlatList
             data={data}
             renderItem={({ item }) => this.renderItem(item)}
-            keyExtractor={item => item.id.toString()}
+            keyExtractor={item => item._id}
           // extraData={this.props}
           />
 
