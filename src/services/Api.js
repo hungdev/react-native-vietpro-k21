@@ -1,8 +1,9 @@
 import { create } from 'apisauce';
 import { store } from '../../App';
+import baseUrl from './config'
 
 const api = create({
-  baseURL: 'http://hungvu.net',
+  baseURL: baseUrl.devUrl,
   headers: {
     Accept: 'application/json',
     'Content-Type': 'application/json',

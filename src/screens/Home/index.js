@@ -10,6 +10,7 @@ import { getNewFeed } from '../../services/Api'
 import momentTz from 'moment-timezone'
 import momentDurationFormatSetup from 'moment-duration-format'
 import moment from 'moment'
+import { getImageUrl } from '../../utils'
 
 momentDurationFormatSetup(momentTz)
 
@@ -49,13 +50,6 @@ class HomeScreen extends React.Component {
     super(props)
     this.state = {
       value: '',
-      // data: [
-      //   { id: 1, name: 'user admin', email: 'admin@admin.com', content: 'hello', image: 'http://i.imgur.com/vGXYiYy.jpg', like: '1 like', date: '29 days ago' },
-      //   { id: 2, name: 'user hello', email: 'admin@admin.com', content: 'hello', image: 'http://i.imgur.com/vGXYiYy.jpg', like: '1 like', date: '28 days ago' },
-      //   { id: 3, name: 'user ccc', email: 'admin@admin.com', content: 'hello', image: 'http://i.imgur.com/vGXYiYy.jpg', like: '1 like', date: '25 days ago' },
-      //   { id: 4, name: 'user aaa', email: 'admin@admin.com', content: 'hello', image: 'http://i.imgur.com/vGXYiYy.jpg', like: '1 like', date: '24 days ago' },
-      //   { id: 5, name: 'user ccss', email: 'admin@admin.com', content: 'hello', image: 'http://i.imgur.com/vGXYiYy.jpg', like: '1 like', date: '29 days ago' },
-      // ]
       data: []
     }
   }
@@ -95,8 +89,9 @@ class HomeScreen extends React.Component {
           </View>
         </View>
         <Image
-          source={{ uri: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/220px-Image_created_with_a_mobile_phone.png' }}
-          style={{ height: 200, width: 'auto', }} />
+          source={{ uri: getImageUrl(item.image_url) }}
+          resizeMode='cover'
+          style={{ height: 400, width: 'auto', }} />
         <View style={{
           justifyContent: 'space-between',
           flexDirection: 'row',
@@ -123,12 +118,12 @@ class HomeScreen extends React.Component {
               <Image
                 source={{ uri: 'http://i.imgur.com/vGXYiYy.jpg' }}
                 style={{ height: 40, width: 40, borderRadius: 20, marginRight: 10 }} />
-              <TextInput
-                style={{ height: 40, width: '100%' }}
-                onChangeText={text => onChangeText(text)}
-                value={value}
-                placeholder={`What's on your mind`}
-              />
+              <Text
+                style={{ height: 40, width: '100%', textAlignVertical: 'center' }}
+                onPress={text => this.props.navigation.navigate('Post')}
+              >
+                {`What's on your mind`}
+              </Text>
             </View>
             <View style={{
               justifyContent: 'center',
