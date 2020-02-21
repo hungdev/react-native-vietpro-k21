@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button, View, Text, TouchableOpacity, Image, TextInput, ScrollView, FlatList } from 'react-native';
+import { withNavigationFocus } from 'react-navigation';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import Feather from 'react-native-vector-icons/Feather';
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -36,7 +37,6 @@ class HomeScreen extends React.Component {
   async getNewFeed() {
     try {
       const result = await getNewFeed()
-      console.log('ccccc', result)
       if (result.ok) {
         this.setState({ data: result.data.data })
       }
@@ -59,6 +59,12 @@ class HomeScreen extends React.Component {
     // this.props.navigation.setParams({ moveProfile: () => this.props.navigation.navigate('Profile') });
 
     this.getNewFeed()
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.isFocused !== this.props.isFocused) {
+      this.getNewFeed()
+    }
   }
 
   onMoveToProfile = () => {
@@ -88,10 +94,10 @@ class HomeScreen extends React.Component {
             <Text>{item.content}</Text>
           </View>
         </View>
-        <Image
+        {item && item.image_url ? <Image
           source={{ uri: getImageUrl(item.image_url) }}
           resizeMode='cover'
-          style={{ height: 400, width: 'auto', }} />
+          style={{ height: 400, width: 'auto', }} /> : null}
         <View style={{
           justifyContent: 'space-between',
           flexDirection: 'row',
@@ -149,4 +155,4 @@ class HomeScreen extends React.Component {
     );
   }
 }
-export default HomeScreen
+export default withNavigationFocus(HomeScreen)
