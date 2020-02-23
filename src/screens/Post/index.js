@@ -38,12 +38,18 @@ class PostScreen extends React.Component {
   }
 
   onPost = async () => {
-    const { data, img64 } = this.state
+    const { data, imageRs } = this.state
     let formData = new FormData()
     formData.append('title', 'hello')
     formData.append('content', data.content)
     formData.append('location', 'Ha noi')
-    formData.append('imageUrl', img64)
+    formData.append('imageUrl',
+      {
+        uri: imageRs.uri,
+        type: imageRs.type,
+        name: imageRs.fileName,
+      }
+    )
     try {
       const result = await createPost(formData)
       this.props.navigation.navigate('Home')
@@ -55,8 +61,8 @@ class PostScreen extends React.Component {
 
   onUpload() {
     const { data } = this.state
-    imagePicker((image) => {
-      this.setState({ imageRs: image.source, img64: image.base64 })
+    imagePicker((uri, fileName, type) => {
+      this.setState({ imageRs: { uri, fileName, type } })
     })
 
   }
@@ -75,7 +81,7 @@ class PostScreen extends React.Component {
         <View style={{ padding: 20 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Image
-              source={{ uri: getImageUrl(user.avatar_url) }}
+              source={{ uri: getImageUrl(user && user.avatar_url) }}
               style={{ height: 60, width: 60, borderRadius: 30, marginRight: 10 }} />
             <View >
               <Text style={{ fontSize: 16, fontWeight: 'bold' }}>{user && user.user_name}</Text>
@@ -89,7 +95,7 @@ class PostScreen extends React.Component {
           placeholder={`What's on your mind?`}
         />
         {imageRs && <Image
-          source={imageRs}
+          source={{ uri: imageRs.uri }}
           resizeMode='cover'
           style={{ height: 100, width: '100%' }} />}
         <View style={{ justifyContent: 'center', alignItems: 'center', height: 50 }}>

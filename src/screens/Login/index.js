@@ -14,7 +14,7 @@ class HomeScreen extends React.Component {
 
     this.state = {
       data: {
-        email: 'cee@c.com',
+        email: 'cee1@c.com',
         password: '123456'
       }
     }
