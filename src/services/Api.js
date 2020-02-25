@@ -46,4 +46,13 @@ export function getNewFeed(params) {
 export function createPost(params) {
   return api.post(`/create-post`, params);
 }
+export function updateUser(params) {
+  return api.put(`/update-user`, params);
+}
+export function deletePost(params) {
+  return api.delete(`/post-delete-many`, {}, { data: params });
+}
+export function updatePost(params) {
+  return api.put(`/update-post`, {}, { data: params });
+}
 // export function getChanel(params) { return api.get(`/channels.list`, params); }

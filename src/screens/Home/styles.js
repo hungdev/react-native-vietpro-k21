@@ -14,5 +14,17 @@ export default StyleSheet.create({
   homeContainer: {
     flex: 1,
     backgroundColor: 'grey'
-  }
+  },
+  content: {
+    backgroundColor: 'white',
+    padding: 22,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 4,
+    borderColor: 'rgba(0, 0, 0, 0.1)',
+  },
+  contentTitle: {
+    fontSize: 20,
+    marginBottom: 12,
+  },
 })

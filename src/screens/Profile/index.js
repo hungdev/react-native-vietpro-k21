@@ -8,25 +8,77 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
 import { CardView, Hr } from '../../components';
 import { Metrics, Colors } from '../../themes'
 import { logout } from '../../actions/authAction'
+import imagePicker from '../../components/ImagePicker'
+import ImagePicker from 'react-native-image-picker';
+import { updateUser } from '../../services/Api'
 
 class ProfileScreen extends React.Component {
-
+  constructor(props) {
+    super(props)
+    this.state = {
+      data: {
+        content: '',
+      }
+    }
+  }
   onLogout() {
     this.props.dispatchLogout()
     this.props.navigation.navigate('SignIn')
   }
+
+  onChangeAvatar() {
+    // imagePicker((uri, fileName, type) => {
+    //   this.setState({ imageRs: { uri, fileName, type } })
+    // })
+    const options = {
+      title: 'Select Avatar',
+      storageOptions: {
+        skipBackup: true,
+        path: 'images',
+      },
+    };
+
+    ImagePicker.showImagePicker(options, (response) => {
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.error) {
+        console.log('ImagePicker Error: ', response.error);
+      } else if (response.customButton) {
+        console.log('User tapped custom button: ', response.customButton);
+      } else {
+        this.setState({
+          imageRs: { uri: response.uri, fileName: response.fileName, type: response.type },
+        });
+        this.updateProfile({ uri: response.uri, name: response.fileName, type: response.type })
+      }
+    });
+  }
+
+  async updateProfile(avatarUrl) {
+    let formData = new FormData()
+    formData.append('avatarUrl', avatarUrl)
+    try {
+      const result = await updateUser(formData)
+      console.log('result', result)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   render() {
+    const { imageRs } = this.state
     return (
       <ScrollView>
         <View style={{ flex: 1, alignItems: 'center', }}>
           <View style={{ marginTop: '5%' }}>
             <Image
-              source={{ uri: 'https://randomuser.me/api/portraits/women/34.jpg' }}
-              style={{ height: 150, width: 150, borderWidth: 1, borderRadius: 75 }}
-              resizeMode='stretch'
+              source={{ uri: (imageRs && imageRs.uri) || 'https://randomuser.me/api/portraits/women/34.jpg' }}
+              style={{ height: 150, width: 150, borderWidth: 1, borderRadius: 80 }}
+              resizeMode='cover'
             />
             <View style={{ position: 'absolute', bottom: 8, right: 0 }}>
               <TouchableOpacity
+                onPress={() => this.onChangeAvatar()}
                 style={{
                   borderWidth: 1,
                   backgroundColor: '#0077FF', borderRadius: 23, height: 45, width: 45,

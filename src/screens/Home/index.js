@@ -1,17 +1,19 @@
 import React from 'react';
 import { Button, View, Text, TouchableOpacity, Image, TextInput, ScrollView, FlatList } from 'react-native';
 import { withNavigationFocus } from 'react-navigation';
+import { connect } from 'react-redux';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import Feather from 'react-native-vector-icons/Feather';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import styles from './styles'
 import { Hr } from '../../components'
 import { Metrics, Colors } from '../../themes';
-import { getNewFeed } from '../../services/Api'
+import { getNewFeed, deletePost, updatePost } from '../../services/Api'
 import momentTz from 'moment-timezone'
 import momentDurationFormatSetup from 'moment-duration-format'
 import moment from 'moment'
 import { getImageUrl } from '../../utils'
+import Modal from "react-native-modal";
 
 momentDurationFormatSetup(momentTz)
 
@@ -50,7 +52,8 @@ class HomeScreen extends React.Component {
     super(props)
     this.state = {
       value: '',
-      data: []
+      data: [],
+      isVisible: false
     }
   }
 
@@ -71,6 +74,32 @@ class HomeScreen extends React.Component {
     this.props.navigation.navigate('Profile')
   }
 
+  async onPostDelete() {
+    const { postId } = this.state
+    try {
+      const result = await deletePost({ ids: [postId] })
+      this.setState({ isVisible: false })
+      this.getNewFeed()
+    } catch (error) {
+
+    }
+  }
+
+  async onLike(item) {
+    const { user } = this.props
+    try {
+      const result = await updatePost({
+        postId: item._id,
+        like: user._id
+      })
+      console.log('result', result)
+      this.setState({ isVisible: false })
+      this.getNewFeed()
+    } catch (error) {
+
+    }
+  }
+
   renderItem(item) {
     const diff = moment().diff(moment(item.created_date), 'days');
     return (
@@ -80,14 +109,21 @@ class HomeScreen extends React.Component {
             <Image
               source={{ uri: 'http://i.imgur.com/vGXYiYy.jpg' }}
               style={{ height: 40, width: 40, borderRadius: 20, marginRight: 10 }} />
-            <View>
-              <Text
-                style={{ fontSize: 16, fontWeight: 'bold' }}
-                onPress={() => this.props.navigation.navigate('Profile')}
+            <View style={{ flexDirection: 'row', flex: 1 }}>
+              <View style={{ flex: 1 }}>
+                <Text
+                  style={{ fontSize: 16, fontWeight: 'bold' }}
+                  onPress={() => this.props.navigation.navigate('Profile')}
+                >
+                  {item && item.user_id && item.user_id.user_name}
+                </Text>
+                <Text style={{ fontSize: 14, color: Colors.grey }}>{item.location}</Text>
+              </View>
+              <TouchableOpacity
+                onPress={() => this.setState({ isVisible: true, postId: item._id })}
               >
-                admin
-              </Text>
-              <Text style={{ fontSize: 14, color: Colors.grey }}>{item.location}</Text>
+                <Feather name='more-vertical' size={20} style={{}} />
+              </TouchableOpacity>
             </View>
           </View>
           <View style={{ marginTop: Metrics.doubleBaseMargin }}>
@@ -103,10 +139,12 @@ class HomeScreen extends React.Component {
           flexDirection: 'row',
           padding: Metrics.doubleBaseMargin
         }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <TouchableOpacity
+            onPress={() => this.onLike(item)}
+            style={{ flexDirection: 'row', alignItems: 'center' }}>
             <AntDesign name='like1' size={25} style={{ color: Colors.facebook, marginRight: 10 }} />
             <Text>{item.likes.length}</Text>
-          </View>
+          </TouchableOpacity>
           <Text>{diff}</Text>
         </View>
       </View >
@@ -150,9 +188,43 @@ class HomeScreen extends React.Component {
           // extraData={this.props}
           />
 
+          <Modal
+            isVisible={this.state.isVisible}
+            onBackdropPress={() => this.setState({ isVisible: false })}
+            swipeDirection={['up', 'left', 'right', 'down']}
+            style={{
+              justifyContent: 'flex-end',
+              margin: 0,
+            }}
+          >
+            <View style={styles.content}>
+              <TouchableOpacity onPress={() => this.onPostDelete()}>
+                <Text style={styles.contentTitle}>Delete</Text>
+              </TouchableOpacity>
+              <Text style={styles.contentTitle}>Do something</Text>
+            </View>
+          </Modal>
+
         </View >
       </ScrollView>
     );
   }
 }
-export default withNavigationFocus(HomeScreen)
+function mapStateToProps(state) {
+  return {
+    token: state.auth.token,
+    user: state.auth.me
+  }
+}
+
+// gửi action lên reducer
+function mapDispatchToProps(dispatch) {
+  return {
+    // // setToken là action
+    // dispatchSetToken: (token) => dispatch(setToken(token)),
+    // dispatchSetMe: (user) => dispatch(setMe(user)),
+    // // dispatchDeletePerson: (person) => dispatch(removePerson(person))
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(withNavigationFocus(HomeScreen))
