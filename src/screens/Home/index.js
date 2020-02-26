@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, View, Text, TouchableOpacity, Image, TextInput, ScrollView, FlatList } from 'react-native';
+import { Button, View, Text, TouchableOpacity, Image, TextInput, ScrollView, FlatList, ActivityIndicator } from 'react-native';
 import { withNavigationFocus } from 'react-navigation';
 import { connect } from 'react-redux';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
@@ -36,24 +36,18 @@ class HomeScreen extends React.Component {
     }
   };
 
-  async getNewFeed() {
-    try {
-      const result = await getNewFeed()
-      if (result.ok) {
-        this.setState({ data: result.data.data })
-      }
-
-    } catch (error) {
-
-    }
-  }
 
   constructor(props) {
     super(props)
     this.state = {
       value: '',
       data: [],
-      isVisible: false
+      isVisible: false,
+      limit: 5,
+      skip: 0,
+      error: null,
+      refreshing: false,
+      canLoadMore: false
     }
   }
 
@@ -95,6 +89,34 @@ class HomeScreen extends React.Component {
       console.log('result', result)
       this.setState({ isVisible: false })
       this.getNewFeed()
+    } catch (error) {
+
+    }
+  }
+
+  handleLoadMore = () => {
+    if (this.state.canLoadMore) {
+      // alert('ok')
+      this.setState({ skip: this.state.skip + 5, canLoadMore: false },
+        () => {
+          this.getNewFeed();
+        }
+      );
+    }
+  };
+
+  async getNewFeed() {
+    const { limit, skip } = this.state
+    try {
+      this.setState({ loading: true });
+      const result = await getNewFeed({ limit, skip })
+      if (result.ok) {
+        this.setState({
+          data: [...this.state.data, ...result.data.data],
+          loading: false,
+        })
+      }
+
     } catch (error) {
 
     }
@@ -151,62 +173,85 @@ class HomeScreen extends React.Component {
     )
   }
 
+  renderHeader() {
+    return (
+      <View style={{ backgroundColor: 'white' }}>
+        <View style={{ flexDirection: 'row', padding: 20, }}>
+          <Image
+            source={{ uri: 'http://i.imgur.com/vGXYiYy.jpg' }}
+            style={{ height: 40, width: 40, borderRadius: 20, marginRight: 10 }} />
+          <Text
+            style={{ height: 40, width: '100%', textAlignVertical: 'center' }}
+            onPress={text => this.props.navigation.navigate('Post')}
+          >
+            {`What's on your mind`}
+          </Text>
+        </View>
+        <View style={{
+          justifyContent: 'center',
+          alignItems: 'center',
+          flexDirection: 'row', borderTopWidth: 1, borderTopColor: Colors.divider,
+          paddingVertical: 10
+        }}>
+          <AntDesign name='camera' size={38} style={{ color: Colors.facebook, marginRight: 10 }} />
+          <Text>Photo</Text>
+        </View>
+      </View>
+    )
+  }
+
+  renderFooter = () => {
+    if (!this.state.loading) return null;
+
+    return (
+      <View
+        style={{
+          paddingVertical: 20,
+          borderTopWidth: 1,
+          borderColor: "#CED0CE",
+        }}
+      >
+        <ActivityIndicator animating size="large" />
+      </View>
+    );
+  };
+
 
   render() {
     const { value, data } = this.state
     return (
-      <ScrollView>
-        <View style={styles.homeContainer}>
-          <View style={{ backgroundColor: 'white' }}>
-            <View style={{ flexDirection: 'row', padding: 20, }}>
-              <Image
-                source={{ uri: 'http://i.imgur.com/vGXYiYy.jpg' }}
-                style={{ height: 40, width: 40, borderRadius: 20, marginRight: 10 }} />
-              <Text
-                style={{ height: 40, width: '100%', textAlignVertical: 'center' }}
-                onPress={text => this.props.navigation.navigate('Post')}
-              >
-                {`What's on your mind`}
-              </Text>
-            </View>
-            <View style={{
-              justifyContent: 'center',
-              alignItems: 'center',
-              flexDirection: 'row', borderTopWidth: 1, borderTopColor: Colors.divider,
-              paddingVertical: 10
-            }}>
-              <AntDesign name='camera' size={38} style={{ color: Colors.facebook, marginRight: 10 }} />
-              <Text>Photo</Text>
-            </View>
+      <View>
 
-
-          </View>
-          <FlatList
-            data={data}
-            renderItem={({ item }) => this.renderItem(item)}
-            keyExtractor={item => item._id}
+        <FlatList
+          data={data}
+          renderItem={({ item }) => this.renderItem(item)}
+          ListHeaderComponent={() => this.renderHeader()}
+          ListFooterComponent={this.renderFooter}
+          keyExtractor={item => item._id}
           // extraData={this.props}
-          />
+          onEndReached={this.handleLoadMore}
+          onEndReachedThreshold={0.5}
+          onMomentumScrollBegin={() => this.setState({ canLoadMore: true })}
+        />
 
-          <Modal
-            isVisible={this.state.isVisible}
-            onBackdropPress={() => this.setState({ isVisible: false })}
-            swipeDirection={['up', 'left', 'right', 'down']}
-            style={{
-              justifyContent: 'flex-end',
-              margin: 0,
-            }}
-          >
-            <View style={styles.content}>
-              <TouchableOpacity onPress={() => this.onPostDelete()}>
-                <Text style={styles.contentTitle}>Delete</Text>
-              </TouchableOpacity>
-              <Text style={styles.contentTitle}>Do something</Text>
-            </View>
-          </Modal>
+        <Modal
+          isVisible={this.state.isVisible}
+          onBackdropPress={() => this.setState({ isVisible: false })}
+          swipeDirection={['up', 'left', 'right', 'down']}
+          style={{
+            justifyContent: 'flex-end',
+            margin: 0,
+          }}
+        >
+          <View style={styles.content}>
+            <TouchableOpacity onPress={() => this.onPostDelete()}>
+              <Text style={styles.contentTitle}>Delete</Text>
+            </TouchableOpacity>
+            <Text style={styles.contentTitle}>Do something</Text>
+          </View>
+        </Modal>
 
-        </View >
-      </ScrollView>
+      </View>
     );
   }
 }
@@ -217,10 +262,8 @@ function mapStateToProps(state) {
   }
 }
 
-// gửi action lên reducer
 function mapDispatchToProps(dispatch) {
   return {
-    // // setToken là action
     // dispatchSetToken: (token) => dispatch(setToken(token)),
     // dispatchSetMe: (user) => dispatch(setMe(user)),
     // // dispatchDeletePerson: (person) => dispatch(removePerson(person))
